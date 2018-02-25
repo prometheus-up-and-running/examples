@@ -1,0 +1,9 @@
+global:
+  smtp_smarthost: 'localhost:25'
+  smtp_from: 'youraddress@example.org'
+route:
+  receiver: example-email
+receivers:
+ - name: example-email
+   email_configs:
+    - to: 'youraddress@example.org'

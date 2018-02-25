@@ -1,0 +1,99 @@
+global:
+  opsgenie_api_key: XXXXXXXX
+  hipchat_auth_token: XXXXXXXX
+  smtp_smarthost: 'localhost:25'
+  smtp_from: 'youraddress@example.org'
+
+
+route:
+  receiver: fallback-pager
+  routes:
+   # Log all alerts.
+   - receiver: log-alerts
+     continue: true
+
+   # Frontend team.
+   - match:
+       team: frontend
+     group_by: [region, env]
+     group_interval: 10m
+     receiver: frontend-pager
+     routes:
+      - match:
+          severity: page
+        receiver: frontend-pager
+        group_wait: 1m
+      - match:
+          severity: ticket
+        group_by: [region, env, alertname]
+        receiver: frontend-ticket
+        repeat_interval: 1d
+        group_interval: 1d
+
+   # Backend team.
+   - match:
+       team: backend
+     receiver: backend-pager
+     routes:
+      - match:
+          severity: page
+          env: dev
+        receiver: backend-ticket
+      - match:
+          severity: page
+        receiver: backend-pager
+      - match:
+          severity: ticket
+        receiver: backend-ticket
+
+
+inhibit_rules:
+ - source_match:
+     severity: 'page-regionfail'
+   target_match:
+     severity: 'page'
+   equal: ['region']
+
+
+receivers: 
+ - name: fallback-pager 
+   pagerduty_configs: 
+    - service_key: XXXXXXXX
+ - name: log-alerts
+   webhook_configs:
+    - url: http://localhost:1234/log
+
+ - name: frontend-pager
+   pagerduty_configs:
+    - service_key: XXXXXXXX
+   slack_configs:
+    - api_url: https://hooks.slack.com/services/XXXXXXXX
+      channel: '#pages'
+      title: 'Alerts in {{ .GroupLabels.region }} {{ .GroupLabels.env }}!'
+      text: >
+        {{ .Alerts | len }} alerts:
+        {{ range .Alerts }}
+        {{ range .Labels.SortedPairs }}{{ .Name }}={{ .Value }} {{ end }}
+        {{ if eq .Annotations.wiki "" -}}
+        Wiki: http://wiki.mycompany/{{ .Labels.alertname }}
+        {{- else -}}
+        Wiki: http://wiki.mycompany/{{ .Annotations.wiki }}
+        {{- end }}
+        {{ if ne .Annotations.dashboard "" -}}
+        Dashboard: {{ .Annotations.dashboard }}&region={{ .Labels.region }}
+        {{- end }}
+
+        {{ end }}
+ - name: frontend-ticket
+   email_configs:
+    - to: 'frontendtickets@example.org'
+
+ - name: backend-pager
+   opsgenie_configs:
+    - teams: backendTeam   # This is a comma separated list.
+   hipchat_configs:
+    - room_id: XXX
+    - room_id: YYY
+ - name: backend-ticket
+   email_configs:
+    - to: 'backendtickets@example.org'

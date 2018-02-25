@@ -1,0 +1,14 @@
+scrape_configs:
+ - job_name: example
+   consul_sd_configs:
+    - server: 'localhost:8500'
+   scrape_timeout: 5s
+   metrics_path: /admin/metrics
+   params:
+     foo: [bar]
+   scheme: https
+   tls_config:
+     insecure_skip_verify: true
+   basic_auth:
+     username: brian
+     password: hunter2

@@ -1,0 +1,25 @@
+global:
+  config_version: 2
+input:
+  type: file
+  path: example.log
+  readall: true  # Use false in production
+grok:
+  additional_patterns:
+   - 'METHOD [A-Z]+'
+   - 'PATH [^ ]+'
+   - 'NUMBER [0-9.]+'
+metrics:
+ - type: counter
+   name: log_http_requests_total
+   help: HTTP requests
+   match: '%{METHOD} %{PATH:path} %{NUMBER:latency}'
+   labels:
+     path: '{{.path}}'
+ - type: histogram
+   name: log_http_request_latency_seconds_total
+   help: HTTP request latency
+   match: '%{METHOD} %{PATH:path} %{NUMBER:latency}'
+   value: '{{.latency}}'
+server:
+   port: 9144

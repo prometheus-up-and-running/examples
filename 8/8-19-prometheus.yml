@@ -1,0 +1,12 @@
+scrape_configs:
+ - job_name: ec2
+   ec2_sd_configs:
+    - region: <region>
+      access_key: <access key>
+      secret_key: <secret key>
+   relabel_configs:
+    - source_labels: [__meta_ec2_tag_service]
+      target_label: job
+    - regex: __meta_ec2_public_tag_monitor_(.*)
+      replacement: '${1}'
+      action: labelmap

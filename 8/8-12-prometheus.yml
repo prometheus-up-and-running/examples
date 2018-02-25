@@ -1,0 +1,9 @@
+scrape_configs:
+ - job_name: file
+   file_sd_configs:
+    - files:
+       - '*.json'
+   relabel_configs:
+    - source_labels: [job, team]
+      regex: prometheus;monitoring
+      action: drop

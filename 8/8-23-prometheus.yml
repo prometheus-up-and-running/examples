@@ -1,0 +1,9 @@
+scrape_configs:
+ - job_name: prometheus
+   static_configs:
+    - targets:
+       - localhost:9090
+   metric_relabel_configs:
+    - source_labels: [__name__]
+      regex: http_request_size_bytes
+      action: drop

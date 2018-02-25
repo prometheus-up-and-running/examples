@@ -1,0 +1,13 @@
+scrape_configs:
+ - job_name: consul
+   consul_sd_configs:
+    - server: 'localhost:8500'
+   relabel_configs:
+    - source_labels: [__meta_consul_address]
+      regex: '(.*)'
+      replacement: '${1}:9100'
+      target_label: __address__
+    - source_labels: [__meta_consul_node]
+      regex: '(.*)'
+      replacement: '${1}:9100'
+      target_label: instance

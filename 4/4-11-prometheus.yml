@@ -1,0 +1,6 @@
+scrape_configs:
+ - job_name: pushgateway
+   honor_labels: true
+   static_configs:
+    - targets:
+      - localhost:9091

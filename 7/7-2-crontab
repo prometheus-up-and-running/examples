@@ -1,0 +1,4 @@
+TEXTFILE=/path/to/textfile/directory
+
+# This must all be on one line
+*/5 * * * * root (echo -n 'shadow_entries '; grep -c . /etc/shadow) > $TEXTFILE/shadow.prom.$$ && mv $TEXTFILE/shadow.prom.$$ $TEXTFILE/shadow.prom

@@ -1,0 +1,16 @@
+[
+  {
+    "targets": [ "host1:9100", "host2:9100" ],
+    "labels": {
+      "team": "infra",
+      "job": "node"
+    }
+  },
+  {
+    "targets": [ "host1:9090" ],
+    "labels": {
+      "team": "monitoring",
+      "job": "prometheus"
+    }
+  }
+]

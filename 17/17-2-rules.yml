@@ -1,0 +1,7 @@
+groups:
+ - name: example
+   rules:
+    - record: job:process_cpu_seconds:rate5m
+      expr: sum without(instance)(rate(process_cpu_seconds_total[5m]))
+    - record: job:process_open_fds:max
+      expr: max without(instance)(process_open_fds)
