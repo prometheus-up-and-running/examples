@@ -4,7 +4,7 @@ scrape_configs:
     - files:
        - '*.json'
    relabel_configs:
-      source_labels: [team]
+    - source_labels: [team]
       regex: monitoring
       replacement: monitor
       target_label: team
